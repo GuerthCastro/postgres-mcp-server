@@ -29,8 +29,6 @@ packages/
 !**/packages/build/
 *.packages.lock.json
 
-# Docker
-.dockerignore
 
 # OS
 .DS_Store
@@ -47,3 +45,16 @@ logs/
 appsettings.*.json
 !appsettings.json
 !appsettings.Development.json
+
+# Rider
+.idea/
+*.sln.iml
+
+# Test results
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+# Publish output
+publish/

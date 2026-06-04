@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Text;
 using System.Text.RegularExpressions;
 using Mcp.PostgreSQL.Services;
@@ -22,8 +22,7 @@ public class ExecuteQueryTool(DatabaseService databaseService)
         if (!upperSql.StartsWith("SELECT"))
             return "Only SELECT queries are allowed.";
 
-        var forbidden = PostgreSQLQueries.ForbiddenKeywords
-            .FirstOrDefault(k => Regex.IsMatch(upperSql, $@"\b{k}\b"));
+        var forbidden = PostgreSQLQueries.ForbiddenKeywords.FirstOrDefault(k => Regex.IsMatch(upperSql, $@"\b{k}\b"));
         if (forbidden != null)
             return $"Query contains forbidden keyword: {forbidden}. Only read-only SELECT queries are allowed.";
 
@@ -45,8 +44,7 @@ public class ExecuteQueryTool(DatabaseService databaseService)
             var rowCount = 0;
             while (await reader.ReadAsync())
             {
-                var row = Enumerable.Range(0, columnCount)
-                    .Select(i => reader.IsDBNull(i) ? "NULL" : reader.GetValue(i).ToString() ?? "NULL");
+                var row = Enumerable.Range(0, columnCount).Select(i => reader.IsDBNull(i) ? "NULL" : reader.GetValue(i).ToString() ?? "NULL");
                 result.AppendLine(string.Join(" | ", row));
                 rowCount++;
             }
@@ -56,8 +54,7 @@ public class ExecuteQueryTool(DatabaseService databaseService)
 
             var output = result.ToString();
             if (output.Length > PostgreSQLQueries.MaxOutputCharacters)
-                output = output[..PostgreSQLQueries.MaxOutputCharacters]
-                    + $"\n\n[Output truncated. {rowCount} total rows, showing partial results.]";
+                output = $"{output[..PostgreSQLQueries.MaxOutputCharacters]}\n\n[Output truncated. {rowCount} total rows, showing partial results.]";
 
             return output;
         }

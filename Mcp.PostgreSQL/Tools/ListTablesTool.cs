@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using Mcp.PostgreSQL.Services;
 using ModelContextProtocol.Server;
 using Npgsql;

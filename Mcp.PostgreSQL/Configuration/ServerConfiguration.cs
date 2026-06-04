@@ -1,4 +1,4 @@
-﻿namespace Mcp.PostgreSQL.Configuration;
+namespace Mcp.PostgreSQL.Configuration;
 
 public class ServerConfiguration
 {

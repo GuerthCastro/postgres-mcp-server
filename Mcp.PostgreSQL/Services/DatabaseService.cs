@@ -1,10 +1,14 @@
-﻿using Mcp.PostgreSQL.Configuration;
+using Mcp.PostgreSQL.Configuration;
 using Npgsql;
+
 namespace Mcp.PostgreSQL.Services;
+
 public class DatabaseService
 {
     private ServerConfiguration _configuration = new();
+
     public bool IsConnected => _configuration.IsConnected;
+
     public void Configure(string host, int? port, string username, string password, string? database)
     {
         _configuration = new ServerConfiguration
@@ -16,6 +20,7 @@ public class DatabaseService
             Database = database
         };
     }
+
     public string GetConnectionString(string? database = null)
     {
         var targetDatabase = database ?? _configuration.Database ?? "postgres";
@@ -29,6 +34,7 @@ public class DatabaseService
             Database = targetDatabase
         }.ToString();
     }
+
     public async Task<NpgsqlConnection> OpenConnectionAsync(string? database = null)
     {
         var connection = new NpgsqlConnection(GetConnectionString(database));

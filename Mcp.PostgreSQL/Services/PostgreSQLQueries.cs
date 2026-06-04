@@ -1,11 +1,11 @@
-﻿namespace Mcp.PostgreSQL.Services;
+namespace Mcp.PostgreSQL.Services;
 
 public static class PostgreSQLQueries
 {
     public const string ListDatabases = """
-        SELECT datname 
-        FROM pg_database 
-        WHERE datistemplate = false 
+        SELECT datname
+        FROM pg_database
+        WHERE datistemplate = false
         ORDER BY datname
         """;
 
@@ -25,7 +25,7 @@ public static class PostgreSQLQueries
         """;
 
     public const string DescribeTable = """
-        SELECT 
+        SELECT
             c.column_name,
             c.data_type,
             c.is_nullable,
@@ -45,7 +45,7 @@ public static class PostgreSQLQueries
               AND tc.table_name = @table
         ) pk ON c.column_name = pk.column_name
         LEFT JOIN (
-            SELECT 
+            SELECT
                 ku.column_name,
                 ccu.table_name AS foreign_table_name,
                 ccu.column_name AS foreign_column_name
@@ -66,6 +66,7 @@ public static class PostgreSQLQueries
     public const string ExecuteQuery = """
         {0}
         """;
+
     public static readonly string[] ForbiddenKeywords = ["INSERT", "UPDATE", "DELETE", "DROP", "TRUNCATE", "ALTER", "CREATE", "GRANT", "REVOKE"];
 
     public const int MaxOutputCharacters = 50_000;

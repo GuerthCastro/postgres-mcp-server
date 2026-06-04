@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Text;
 using Mcp.PostgreSQL.Services;
 using ModelContextProtocol.Server;
@@ -49,7 +49,7 @@ public class DescribeTableTool(DatabaseService databaseService)
                 result.AppendLine($"{columnName,-30} {dataType,-20} {isNullable,-10} {isPrimaryKey,-5} {isForeignKey,-5} {references,-30}");
             }
 
-            return hasRows ? result.ToString(): $"Table '{schema}.{table}' not found in database '{database}'.";
+            return hasRows ? result.ToString() : $"Table '{schema}.{table}' not found in database '{database}'.";
         }
         catch (Exception ex)
         {
