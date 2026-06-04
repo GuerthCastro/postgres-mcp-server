@@ -67,4 +67,6 @@ public static class PostgreSQLQueries
         {0}
         """;
     public static readonly string[] ForbiddenKeywords = ["INSERT", "UPDATE", "DELETE", "DROP", "TRUNCATE", "ALTER", "CREATE", "GRANT", "REVOKE"];
+
+    public const int MaxOutputCharacters = 50_000;
 }

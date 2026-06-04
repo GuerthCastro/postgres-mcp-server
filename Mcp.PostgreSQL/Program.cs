@@ -5,5 +5,5 @@ builder.Services.AddMcpServer()
     .WithHttpTransport()
     .WithToolsFromAssembly();
 var app = builder.Build();
-app.MapMcp();
+app.MapMcp("/mcp");
 app.Run();
