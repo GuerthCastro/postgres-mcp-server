@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:11.0 AS build
 WORKDIR /src
 
 COPY ["Mcp.PostgreSQL/Mcp.PostgreSQL.csproj", "Mcp.PostgreSQL/"]
@@ -8,7 +8,7 @@ COPY . .
 WORKDIR "/src/Mcp.PostgreSQL"
 RUN dotnet publish "Mcp.PostgreSQL.csproj" -c Release -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:11.0 AS runtime
 WORKDIR /app
 
 ENV ASPNETCORE_HTTP_PORTS=80

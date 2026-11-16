@@ -1,12 +1,12 @@
 # postgres-mcp-server
 
-[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com)
+[![.NET](https://img.shields.io/badge/.NET-11.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com)
 [![MCP SDK](https://img.shields.io/badge/MCP%20SDK-1.3.0-blue)](https://github.com/modelcontextprotocol/csharp-sdk)
 [![Npgsql](https://img.shields.io/badge/Npgsql-10.0.3-336791?logo=postgresql)](https://npgsql.org)
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker)](https://hub.docker.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A **read-only** MCP server for PostgreSQL databases, built with .NET 10 and the official
+A **read-only** MCP server for PostgreSQL databases, built with .NET 11 and the official
 [ModelContextProtocol C# SDK](https://github.com/modelcontextprotocol/csharp-sdk).
 
 Connect any MCP-compatible AI agent to your PostgreSQL server and let it explore databases,
@@ -226,7 +226,7 @@ count
 
 ### Building from source
 
-- [.NET 10 SDK](https://dotnet.microsoft.com/download)
+- [.NET 11 SDK](https://dotnet.microsoft.com/download)
 
 ```bash
 cd Mcp.PostgreSQL
@@ -271,7 +271,7 @@ with HTTP transport.
 
 | Component | Technology |
 |---|---|
-| Runtime | [.NET 10](https://dotnet.microsoft.com) |
+| Runtime | [.NET 11](https://dotnet.microsoft.com) |
 | MCP SDK | [ModelContextProtocol.AspNetCore 1.3.0](https://github.com/modelcontextprotocol/csharp-sdk) |
 | PostgreSQL driver | [Npgsql 10.0.3](https://npgsql.org) |
 | Container | [Docker](https://www.docker.com) |
