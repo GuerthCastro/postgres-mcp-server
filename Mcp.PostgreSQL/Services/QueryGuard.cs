@@ -1,4 +1,3 @@
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Mcp.PostgreSQL.Services;
@@ -8,21 +7,17 @@ public static partial class QueryGuard
     public static string? Validate(string sql, IReadOnlyCollection<string> forbiddenKeywords, out string normalizedSql)
     {
         normalizedSql = string.Empty;
-        var tokens = SqlToken().Matches(sql ?? string.Empty);
 
-        if (tokens.Any(token => token.Groups["escapeString"].Success))
-            return "Escape string constants (E'...') are not allowed.";
+        var quotingError = ValidateQuoting(sql);
+        if (quotingError is not null)
+            return quotingError;
 
-        if (tokens.Any(token => token.Groups["dollarQuote"].Success))
-            return "Dollar-quoted strings ($$...$$ or $tag$...$tag$) are not allowed.";
-
-        var sqlWithoutComments = SqlToken().Replace(sql ?? string.Empty, match => match.Groups["comment"].Success ? " " : match.Value);
-        normalizedSql = sqlWithoutComments.Trim().TrimEnd(';').Trim();
+        normalizedSql = SqlText.RemoveComments(sql ?? string.Empty).Trim().TrimEnd(';').Trim();
 
         if (normalizedSql.Length == 0)
             return "Query is empty.";
 
-        var upperSqlWithoutQuotedText = SqlToken().Replace(normalizedSql, "''").ToUpperInvariant();
+        var upperSqlWithoutQuotedText = SqlText.MaskQuotedTextAndComments(normalizedSql).ToUpperInvariant();
 
         if (!upperSqlWithoutQuotedText.StartsWith("SELECT") && !upperSqlWithoutQuotedText.StartsWith("WITH"))
             return "Only read-only queries starting with SELECT or WITH are allowed.";
@@ -30,12 +25,28 @@ public static partial class QueryGuard
         if (upperSqlWithoutQuotedText.Contains(';'))
             return "Multiple statements are not allowed. Send a single query without ';'.";
 
-        var forbidden = forbiddenKeywords.FirstOrDefault(keyword => Regex.IsMatch(upperSqlWithoutQuotedText, $@"\b{Regex.Escape(keyword)}\b"));
+        var forbidden = FindForbiddenKeyword(upperSqlWithoutQuotedText, forbiddenKeywords);
 
         return forbidden is null
             ? null
             : $"Query contains forbidden keyword: {forbidden}. Only read-only queries are allowed.";
     }
+
+    public static string? ValidateQuoting(string? sql)
+    {
+        var tokens = SqlText.Tokens(sql ?? string.Empty);
+
+        if (tokens.Any(token => token.Groups["escapeString"].Success))
+            return "Escape string constants (E'...') are not allowed.";
+
+        if (tokens.Any(token => token.Groups["dollarQuote"].Success))
+            return "Dollar-quoted strings ($$...$$ or $tag$...$tag$) are not allowed.";
+
+        return null;
+    }
+
+    public static string? FindForbiddenKeyword(string upperSqlWithoutQuotedText, IReadOnlyCollection<string> forbiddenKeywords) =>
+        forbiddenKeywords.FirstOrDefault(keyword => Regex.IsMatch(upperSqlWithoutQuotedText, $@"\b{Regex.Escape(keyword)}\b"));
 
     public static string? ValidatePaging(string normalizedSql, int offset)
     {
@@ -48,27 +59,8 @@ public static partial class QueryGuard
         return null;
     }
 
-    private static bool HasTopLevelOrderBy(string normalizedSql)
-    {
-        var sqlWithoutQuotedText = SqlToken().Replace(normalizedSql, match => match.Groups["comment"].Success ? " " : "''");
-        var topLevelSql = new StringBuilder(sqlWithoutQuotedText.Length);
-        var depth = 0;
-
-        foreach (var character in sqlWithoutQuotedText)
-        {
-            if (character == '(')
-                depth++;
-            else if (character == ')')
-                depth = Math.Max(0, depth - 1);
-
-            topLevelSql.Append(depth == 0 && character != ')' ? character : ' ');
-        }
-
-        return TopLevelOrderBy().IsMatch(topLevelSql.ToString());
-    }
-
-    [GeneratedRegex("""(?<comment>--[^\r\n]*|/\*.*?\*/)|(?<escapeString>(?<![\w$])[Ee]')|(?<dollarQuote>(?<![\w$])\$(?:[A-Za-z_][A-Za-z_0-9]*)?\$)|"(?:[^"]|"")*"|'(?:[^']|'')*'""", RegexOptions.Singleline)]
-    private static partial Regex SqlToken();
+    private static bool HasTopLevelOrderBy(string normalizedSql) =>
+        TopLevelOrderBy().IsMatch(SqlText.TopLevel(SqlText.MaskQuotedTextAndComments(normalizedSql)));
 
     [GeneratedRegex(@"\bORDER\s+BY\b", RegexOptions.IgnoreCase)]
     private static partial Regex TopLevelOrderBy();
