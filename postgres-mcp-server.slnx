@@ -5,5 +5,6 @@
     <File Path="Dockerfile" />
     <File Path="README.md" />
   </Folder>
+  <Project Path="Mcp.PostgreSQL.Tests/Mcp.PostgreSQL.Tests.csproj" />
   <Project Path="Mcp.PostgreSQL/Mcp.PostgreSQL.csproj" />
 </Solution>

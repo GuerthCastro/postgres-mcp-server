@@ -8,5 +8,4 @@ public class ServerConfiguration
     public string Password { get; init; } = string.Empty;
     public string? Database { get; init; }
     public int ResolvedPort => Port ?? 5432;
-    public bool IsConnected => !string.IsNullOrWhiteSpace(Host) && !string.IsNullOrWhiteSpace(Username);
 }

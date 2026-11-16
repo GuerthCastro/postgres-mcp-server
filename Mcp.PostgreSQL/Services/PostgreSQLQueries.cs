@@ -67,7 +67,12 @@ public static class PostgreSQLQueries
         {0}
         """;
 
-    public static readonly string[] ForbiddenKeywords = ["INSERT", "UPDATE", "DELETE", "DROP", "TRUNCATE", "ALTER", "CREATE", "GRANT", "REVOKE"];
-
-    public const int MaxOutputCharacters = 50_000;
+    public static readonly string[] ForbiddenKeywords =
+    [
+        "INSERT", "UPDATE", "DELETE", "DROP", "TRUNCATE", "ALTER", "CREATE", "GRANT", "REVOKE",
+        "INTO", "COPY", "MERGE", "CALL", "DO", "VACUUM", "ANALYZE", "REINDEX", "CLUSTER", "LOCK",
+        "COMMENT", "REFRESH", "NOTIFY", "LISTEN", "SECURITY",
+        "PG_TERMINATE_BACKEND", "PG_CANCEL_BACKEND", "PG_RELOAD_CONF", "SET_CONFIG",
+        "PG_READ_FILE", "PG_READ_BINARY_FILE", "PG_LS_DIR", "LO_IMPORT", "LO_EXPORT", "DBLINK"
+    ];
 }
