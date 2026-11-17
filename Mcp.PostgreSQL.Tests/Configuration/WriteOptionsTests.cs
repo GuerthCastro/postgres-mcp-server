@@ -36,14 +36,13 @@ public class WriteOptionsTests
     }
 
     [Fact]
-    public void From_ShouldParseTargetsAndDefaults_WhenWebhookIsConfigured()
+    public void From_ShouldParseDefaults_WhenWebhookIsConfigured()
     {
         // Arrange
         var variables = new Dictionary<string, string>
         {
             ["MCP_WRITE_MODE"] = "on",
             ["MCP_WRITE_CONFIRMATION"] = "webhook",
-            ["MCP_WRITE_ALLOWED_TARGETS"] = "db.example.test:5432/app, localhost:6543/sandbox",
             ["MCP_WRITE_CONFIRM_WEBHOOK_URL"] = "https://hooks.example.test/confirm",
             ["MCP_WRITE_CONFIRM_WEBHOOK_SECRET"] = Secret
         };
@@ -54,62 +53,26 @@ public class WriteOptionsTests
         // Assert
         options.Enabled.Should().BeTrue();
         options.MaxRows.Should().Be(50);
-        options.AllowedTargets.Should().Equal(new WriteTarget("db.example.test", 5432, "app"), new WriteTarget("localhost", 6543, "sandbox"));
-        options.IsAllowed("DB.EXAMPLE.TEST", 5432, "app").Should().BeTrue();
-        options.IsAllowed("db.example.test", 5432, "App").Should().BeFalse();
-        options.IsAllowed("db.example.test", 6543, "app").Should().BeFalse();
-        options.IsAllowed("other.example.test", 5432, "app").Should().BeFalse();
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("  ")]
-    public void From_ShouldAllowAnyTarget_WhenAllowedTargetsIsNotSet(string? targets)
+    [Fact]
+    public void From_ShouldEnableWrites_WhenElicitationIsConfigured()
     {
         // Arrange
-        var variables = new Dictionary<string, string?>
-        {
-            ["MCP_WRITE_MODE"] = "on",
-            ["MCP_WRITE_CONFIRMATION"] = "elicitation",
-            ["MCP_WRITE_ALLOWED_TARGETS"] = targets
-        };
+        var variables = new Dictionary<string, string> { ["MCP_WRITE_MODE"] = "on", ["MCP_WRITE_CONFIRMATION"] = "elicitation" };
 
         // Act
         var options = WriteOptions.From(variables.GetValueOrDefault);
 
         // Assert
         options.Enabled.Should().BeTrue();
-        options.AllowedTargets.Should().BeEmpty();
-        options.IsAllowed("db.example.test", 5432, "app").Should().BeTrue();
-        options.IsAllowed("other.example.test", 1, "sandbox").Should().BeTrue();
-    }
-
-    [Fact]
-    public void IsAllowed_ShouldRejectUnlistedTarget_WhenAllowedTargetsIsSet()
-    {
-        // Arrange
-        var variables = new Dictionary<string, string>
-        {
-            ["MCP_WRITE_MODE"] = "on",
-            ["MCP_WRITE_CONFIRMATION"] = "elicitation",
-            ["MCP_WRITE_ALLOWED_TARGETS"] = "db.example.test:5432/app"
-        };
-
-        // Act
-        var options = WriteOptions.From(variables.GetValueOrDefault);
-
-        // Assert
-        options.IsAllowed("db.example.test", 5432, "app").Should().BeTrue();
-        options.IsAllowed("db.example.test", 5432, "sandbox").Should().BeFalse();
-        options.IsAllowed("other.example.test", 5432, "app").Should().BeFalse();
+        options.Confirmation.Should().Be(WriteConfirmationMode.Elicitation);
+        options.MaxRows.Should().Be(50);
     }
 
     [Theory]
     [InlineData("MCP_WRITE_MODE", "yes")]
     [InlineData("MCP_WRITE_CONFIRMATION", "email")]
-    [InlineData("MCP_WRITE_ALLOWED_TARGETS", "db.example.test/app")]
-    [InlineData("MCP_WRITE_ALLOWED_TARGETS", "db.example.test:port/app")]
     [InlineData("MCP_WRITE_MAX_ROWS", "0")]
     [InlineData("MCP_WRITE_CONFIRM_WEBHOOK_URL", "http://hooks.example.test/confirm")]
     [InlineData("MCP_WRITE_CONFIRM_WEBHOOK_URL", "not a url")]
@@ -121,7 +84,6 @@ public class WriteOptionsTests
         {
             ["MCP_WRITE_MODE"] = "on",
             ["MCP_WRITE_CONFIRMATION"] = "webhook",
-            ["MCP_WRITE_ALLOWED_TARGETS"] = "db.example.test:5432/app",
             ["MCP_WRITE_CONFIRM_WEBHOOK_URL"] = "https://hooks.example.test/confirm",
             ["MCP_WRITE_CONFIRM_WEBHOOK_SECRET"] = Secret,
             [variable] = value
@@ -144,7 +106,6 @@ public class WriteOptionsTests
         {
             ["MCP_WRITE_MODE"] = "on",
             ["MCP_WRITE_CONFIRMATION"] = "webhook",
-            ["MCP_WRITE_ALLOWED_TARGETS"] = "db.example.test:5432/app",
             ["MCP_WRITE_CONFIRM_WEBHOOK_URL"] = url,
             ["MCP_WRITE_CONFIRM_WEBHOOK_SECRET"] = Secret
         };
